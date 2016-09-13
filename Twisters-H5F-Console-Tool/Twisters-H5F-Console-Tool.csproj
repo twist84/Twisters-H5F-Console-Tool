@@ -7,8 +7,8 @@
     <ProjectGuid>{3ECF62AD-FEAB-4703-80E8-EE54C3748BFC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Twisters_H5_Console_Tool</RootNamespace>
-    <AssemblyName>Twisters-H5-Console-Tool</AssemblyName>
+    <RootNamespace>Twisters_H5F_Console_Tool</RootNamespace>
+    <AssemblyName>Twisters-H5F-Console-Tool</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
