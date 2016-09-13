@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Memory;
 
@@ -7,9 +6,6 @@ namespace Twisters_H5_Console_Tool
 {
     class Program
     {
-        static Int32 FOV_Address = 0x58ECF90; // Global FOV memory address
-        static List<Int32> FPS_Address = new List<Int32>(new Int32[] { 0x34B8C50, 0x34B8C60, 0x34B8C70 }); // Global FPS memory addresses
-
         static void Main(string[] args)
         {
             Console.WriteLine("Current FOV: {0}", FOV_Get()); // Tell user current FOV
@@ -72,23 +68,23 @@ namespace Twisters_H5_Console_Tool
 
         static float FOV_Get()
         {
-            return BitConverter.ToSingle(Manager.ReadFromAddress(FOV_Address), 0);
+            return BitConverter.ToSingle(Manager.ReadFromAddress(Addresses.FOV), 0);
         }
 
         static int FPS_Get()
         {
-            return 1000000 / BitConverter.ToInt16(Manager.ReadFromAddress(0x34B8C50), 0);
+            return 1000000 / BitConverter.ToInt16(Manager.ReadFromAddress(Addresses.FPS[0]), 0);
         }
 
         static void FOV_Set(float newFOV = 78)
         {
-            Manager.WriteToAddress(FOV_Address, BitConverter.GetBytes(newFOV));
+            Manager.WriteToAddress(Addresses.FOV, BitConverter.GetBytes(newFOV));
         }
 
         static void FPS_Set(float newFPS = 60)
         {
-            for (int i = 0; i < FPS_Address.Count; i++)
-                Manager.WriteToAddress(FPS_Address[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newFPS)));
+            for (int i = 0; i < Addresses.FPS.Count; i++)
+                Manager.WriteToAddress(Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newFPS)));
         }
     }
 }

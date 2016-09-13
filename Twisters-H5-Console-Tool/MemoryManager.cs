@@ -3,9 +3,10 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 namespace Memory
 {
@@ -62,5 +63,11 @@ namespace Memory
 
             CloseHandle(hProc);
         }
+    }
+
+    class Addresses
+    {
+        public static Int32 FOV = 0x58ECF90; // Global FOV memory address
+        public static List<Int32> FPS = new List<Int32>(new Int32[] { 0x34B8C50, 0x34B8C60, 0x34B8C70 }); // Global FPS memory addresses
     }
 }
