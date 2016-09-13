@@ -1,17 +1,20 @@
 ﻿using System;
 
+//using Memory;
+
 namespace Twisters_H5_Console_Tool
 {
     class Program
     {
         static void Main(string[] args)
         {
+            //Console.WriteLine("Base Address: {0}{1}", Addresses.baseAddress, Environment.NewLine);
             Console.WriteLine("Current FOV: {0}", Get.FOV()); // Tell user current FOV
             Console.WriteLine("Current FPS: {0}", Get.FPS()); // Tell user current FPS
+            Console.WriteLine("{0}Enter a Command or Type Help to Show help:", Environment.NewLine);
 
             while (true) // Main loop
             {
-                Console.Write("Enter a Command or Type Help to Show help");
                 string input = Console.ReadLine(); // Get input from user
 
                 switch (input.ToLower()) // Switch with lower case user input

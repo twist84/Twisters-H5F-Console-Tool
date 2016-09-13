@@ -15,6 +15,11 @@ namespace Twisters_H5_Console_Tool
         {
             return 1000000 / BitConverter.ToInt16(Manager.ReadFromAddress(Addresses.FPS[0]), 0);
         }
+
+        /*public static int DOF()
+        {
+            return BitConverter.ToInt16(Manager.ReadFromAddress(Addresses.DOF), 0);
+        }*/
     }
 
     class Set
@@ -29,5 +34,10 @@ namespace Twisters_H5_Console_Tool
             for (int i = 0; i < Addresses.FPS.Count; i++)
                 Manager.WriteToAddress(Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newFPS)));
         }
+
+        /*public static void DOF(float newDOF = )
+        {
+            Manager.WriteToAddress(Addresses.DOF, BitConverter.GetBytes(newDOF));
+        }*/
     }
 }

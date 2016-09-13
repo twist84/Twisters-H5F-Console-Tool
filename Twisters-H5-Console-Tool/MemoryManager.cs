@@ -12,6 +12,8 @@ namespace Memory
 {
     class Manager
     {
+        public static Process process = Process.GetProcessesByName("halo5forge").FirstOrDefault();
+
         public enum ProcessAccessFlags : uint
         {
             All = 0x001F0FFF,
@@ -40,10 +42,8 @@ namespace Memory
 
         public static byte[] ReadFromAddress(Int32 address)
         {
-            Process p = Process.GetProcessesByName("halo5forge").FirstOrDefault();
-            Int64 startOffset = p.MainModule.BaseAddress.ToInt64();
-            Int64 offset = startOffset + address;
-            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)p.Id);
+            Int64 offset = Addresses.Base.ToInt64() + address;
+            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)process.Id);
             int unused = 0;
             IntPtr addr = new IntPtr(offset);
             byte[] hex = new byte[4];
@@ -53,10 +53,8 @@ namespace Memory
 
         public static void WriteToAddress(Int32 address, byte[] hex)
         {
-            Process p = Process.GetProcessesByName("halo5forge").FirstOrDefault();
-            Int64 startOffset = p.MainModule.BaseAddress.ToInt64();
-            Int64 offset = startOffset + address;
-            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)p.Id);
+            Int64 offset = Addresses.Base.ToInt64() + address;
+            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)process.Id);
             int unused = 0;
             IntPtr addr = new IntPtr(offset);
             WriteProcessMemory(hProc, addr, hex, (UInt32)hex.LongLength, out unused);
@@ -67,7 +65,10 @@ namespace Memory
 
     class Addresses
     {
-        public static Int32 FOV = 0x58ECF90; // Global FOV memory address
-        public static List<Int32> FPS = new List<Int32>(new Int32[] { 0x34B8C50, 0x34B8C60, 0x34B8C70 }); // Global FPS memory addresses
+        public static IntPtr Base = Manager.process.MainModule.BaseAddress;
+        public static string baseAddress = Base.ToString("X"); // Base memory address
+        public static Int32 FOV = 0x58ECF90; // FOV memory address
+        public static List<Int32> FPS = new List<Int32>(new Int32[] { 0x34B8C50, 0x34B8C60, 0x34B8C70 }); // FPS memory addresses
+        //public static Int32 DOF = Int32.Parse(baseAddress) + ; // DOF memory address
     }
 }
