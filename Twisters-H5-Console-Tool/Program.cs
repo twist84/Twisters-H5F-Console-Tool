@@ -1,15 +1,13 @@
 ﻿using System;
 
-using Memory;
-
 namespace Twisters_H5_Console_Tool
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Current FOV: {0}", FOV_Get()); // Tell user current FOV
-            Console.WriteLine("Current FPS: {0}", FPS_Get()); // Tell user current FPS
+            Console.WriteLine("Current FOV: {0}", Get.FOV()); // Tell user current FOV
+            Console.WriteLine("Current FPS: {0}", Get.FPS()); // Tell user current FPS
 
             while (true) // Main loop
             {
@@ -41,12 +39,12 @@ namespace Twisters_H5_Console_Tool
                         if (isNumeric.Equals(true)) // If array entry 2 Has Int Continue
                         {
                             Console.WriteLine("Setting FOV to {0}.", Int32.Parse(Input[1]));
-                            FOV_Set(Int32.Parse(Input[1])); // Set FOV to array entry 2
+                            Set.FOV(Int32.Parse(Input[1])); // Set FOV to array entry 2
                         }
                         else if (Input[1].ToLower().Equals("default")) // If array entry 2 lower case equals "default" continue
                         {
                             Console.WriteLine("Setting FOV back to default.");
-                            FOV_Set(); // Set FOV to default
+                            Set.FOV(); // Set FOV to default
                         }
                     }
                     else if (Input[0].ToLower().Equals("fps")) // If array entry 1 lower case equals "fps" continue
@@ -54,37 +52,16 @@ namespace Twisters_H5_Console_Tool
                         if (isNumeric.Equals(true)) // If array entry 2 has int continue
                         {
                             Console.WriteLine("Setting FPS to {0}.", Int32.Parse(Input[1]));
-                            FPS_Set(Int32.Parse(Input[1])); // Set FPS to array entry 2
+                            Set.FPS(Int32.Parse(Input[1])); // Set FPS to array entry 2
                         }
                         else if (Input[1].ToLower().Equals("default")) // If array entry 2 lower case equals "default" continue
                         {
                             Console.WriteLine("Setting FPS back to default.");
-                            FPS_Set(); // Set FPS to default
+                            Set.FPS(); // Set FPS to default
                         }
                     }
                 }
             }
-        }
-
-        static float FOV_Get()
-        {
-            return BitConverter.ToSingle(Manager.ReadFromAddress(Addresses.FOV), 0);
-        }
-
-        static int FPS_Get()
-        {
-            return 1000000 / BitConverter.ToInt16(Manager.ReadFromAddress(Addresses.FPS[0]), 0);
-        }
-
-        static void FOV_Set(float newFOV = 78)
-        {
-            Manager.WriteToAddress(Addresses.FOV, BitConverter.GetBytes(newFOV));
-        }
-
-        static void FPS_Set(float newFPS = 60)
-        {
-            for (int i = 0; i < Addresses.FPS.Count; i++)
-                Manager.WriteToAddress(Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newFPS)));
         }
     }
 }
