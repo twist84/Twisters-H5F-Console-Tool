@@ -1,4 +1,8 @@
-﻿using System;
+﻿/* Taken form https://github.com/CorpenEldorito/Corps-H5F-Tool
+ * Credit goes to Corpen
+ */
+
+using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
