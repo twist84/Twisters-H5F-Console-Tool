@@ -2,7 +2,7 @@
 
 using Memory;
 
-namespace Twisters_H5F_Console_Tool
+namespace Commands
 {
     class Get
     {

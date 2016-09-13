@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Commands;
 //using Memory;
 
 namespace Twisters_H5F_Console_Tool
