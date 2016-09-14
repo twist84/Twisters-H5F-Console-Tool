@@ -27,10 +27,8 @@ namespace Twisters_H5F_Console_Tool
                 }
                 catch { }
 
-                if((CommandGet.FOV() != 0))
-                {
+                if(CommandGet.FOV() != 0)
                     Console.WriteLine("Current FOV: {0}", CommandGet.FOV()); // Tell user current FOV
-                }
                 else
                     Console.WriteLine("Current FOV unavailable (game not fully loaded maybe?)");
 
