@@ -1,8 +1,4 @@
-﻿/* Taken form https://github.com/CorpenEldorito/Corps-H5F-Tool
- * Credit goes to Corpen
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,7 +7,7 @@ using System.Text;
 
 namespace Memory
 {
-    class Manager
+    class Manager // Taken from https://github.com/CorpenEldorito/Corps-H5F-Tool Credit goes to Corpen.
     {
         public static int H5Fpid = (int)UWP.LaunchApp("Microsoft.Halo5Forge_1.114.4592.2_x64__8wekyb3d8bbwe");
 
@@ -73,7 +69,7 @@ namespace Memory
         //public static Int32 DOF = Int32.Parse(baseAddress) + ; // DOF memory address
     }
 
-    class UWP
+    class UWP // Taken from http://blogs.microsoft.co.il/pavely/2015/10/24/launching-windows-store-apps-programmatically/ Credit goes to Pavel.
     {
         enum ActivateOptions
         {
@@ -135,9 +131,7 @@ namespace Memory
 
         public static void SetOwnToForeground()
         {
-            IntPtr Handle = Process.GetCurrentProcess().MainWindowHandle;
-
-            SetForegroundWindow(Handle);
+            SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
         }
     }
 }
