@@ -243,3 +243,4 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/Twisters-H5F-Console-Tool/TlsExample.cs
