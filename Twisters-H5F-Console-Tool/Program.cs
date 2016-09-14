@@ -1,7 +1,6 @@
 ﻿using System;
 
-using Commands;
-using Memory;
+using Manager;
 
 using System.Diagnostics;
 
@@ -14,7 +13,7 @@ namespace Twisters_H5F_Console_Tool
             Process p = default(Process);
             try
             {
-                p = Process.GetProcessById((int)Manager.H5Fpid);
+                p = Process.GetProcessById((int)Memory.H5Fpid);
             }
             catch { }
 
@@ -24,40 +23,30 @@ namespace Twisters_H5F_Console_Tool
                 //Console.WriteLine("Base Address: {0}{1}", Addresses.baseAddress, Environment.NewLine);
                 try
                 {
-                    Get.FOV();
+                    CommandGet.FOV();
                 }
                 catch { }
 
-                if((Get.FOV() != 0))
+                if((CommandGet.FOV() != 0))
                 {
-                    Console.WriteLine("Current FOV: {0}", Get.FOV()); // Tell user current FOV
+                    Console.WriteLine("Current FOV: {0}", CommandGet.FOV()); // Tell user current FOV
                 }
                 else
                     Console.WriteLine("Current FOV unavailable (game not fully loaded maybe?)");
 
-                Console.WriteLine("Current FPS: {0}", Get.FPS()); // Tell user current FPS
+                Console.WriteLine("Current FPS: {0}", CommandGet.FPS()); // Tell user current FPS
                 Console.WriteLine("{0}Enter a Command or Type Help to Show help:", Environment.NewLine);
 
                 while (true) // Main loop
                 {
                     string input = Console.ReadLine(); // Get input from user
 
-                    switch (input.ToLower()) // Switch with lower case user input
-                    {
-                        case "help":
-                            Console.WriteLine("Type FOV and Default or a value between 65-150,\nI.E. fov default or fov 110"); // Tell user FOV help options
-                            Console.WriteLine("Type FPS and Default or a value between 30-300,\nI.E. fps default or fps 144"); // Tell user FPS help options
-                            Console.WriteLine("Type Exit to close the application."); // Tell user Exit help options
-                            break;
-                        case "exit":
-                            Console.WriteLine("Exiting the application.");
-                            Environment.Exit(0); // Exit the appliction
-                            break;
-                        default:
-                            if (!(input.ToLower().StartsWith("fov") || input.ToLower().StartsWith("fps")))
-                                Console.WriteLine("Please enter a valid command.");
-                            break;
-                    }
+                    if (input.ToLower().Contains("help"))
+                        Console.WriteLine(Help.Get(input.ToLower()));
+                    else if (input.ToLower().Equals("exit"))
+                        Environment.Exit(0); // Exit the appliction
+                    else if (!(input.ToLower().StartsWith("fov") || input.ToLower().StartsWith("fps")))
+                        Console.WriteLine("Please enter a valid command.");
 
                     string[] Input = input.Split(' '); // Split input into array
 
@@ -72,7 +61,7 @@ namespace Twisters_H5F_Console_Tool
                             {
                                 case true:
                                     Console.WriteLine("Setting FOV back to default.");
-                                    Set.FOV(); // Set FOV to default
+                                    CommandSet.FOV(); // Set FOV to default
                                     break;
                                 case false:
                                     Console.WriteLine("{0} is not a valid argument for FOV, type Help for examples", Input[1]);
@@ -83,7 +72,7 @@ namespace Twisters_H5F_Console_Tool
                                 if (n >= 65 && n <= 150)
                                 {
                                     Console.WriteLine("Setting FOV to {0}.", Int32.Parse(Input[1]));
-                                    Set.FOV(Int32.Parse(Input[1])); // Set FOV to array entry 2
+                                    CommandSet.FOV(Int32.Parse(Input[1])); // Set FOV to array entry 2
                                 }
                                 else if (n < 150)
                                     Console.WriteLine("Not possible to set FOV higher than 150."); // Force user to stay lower than or equal 150fov
@@ -97,7 +86,7 @@ namespace Twisters_H5F_Console_Tool
                             {
                                 case true:
                                     Console.WriteLine("Setting FPS back to default.");
-                                    Set.FPS(); // Set FPS to default
+                                    CommandSet.FPS(); // Set FPS to default
                                     break;
                                 case false:
                                     Console.WriteLine("{0} is not a valid argument for FPS, type Help for examples", Input[1]);
@@ -108,7 +97,7 @@ namespace Twisters_H5F_Console_Tool
                                 if (n >= 30 && n <= 300)
                                 {
                                     Console.WriteLine("Setting FPS to {0}.", Int32.Parse(Input[1]));
-                                    Set.FPS(Int32.Parse(Input[1])); // Set FPS to array entry 2
+                                    CommandSet.FPS(Int32.Parse(Input[1])); // Set FPS to array entry 2
                                 }
                                 else if (n < 300)
                                     Console.WriteLine("Not possible to set FPS higher than 300."); // Force user to stay lower than or equal 300fps

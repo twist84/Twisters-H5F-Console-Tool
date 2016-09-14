@@ -5,9 +5,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Memory
+namespace Manager
 {
-    class Manager // Taken from https://github.com/CorpenEldorito/Corps-H5F-Tool Credit goes to Corpen.
+    class Memory // Taken from https://github.com/CorpenEldorito/Corps-H5F-Tool Credit goes to Corpen.
     {
         public static int H5Fpid = (int)UWP.LaunchApp("Microsoft.Halo5Forge_1.114.4592.2_x64__8wekyb3d8bbwe");
 
@@ -132,6 +132,81 @@ namespace Memory
         public static void SetOwnToForeground()
         {
             SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
+        }
+    }
+
+    class CommandGet
+    {
+        public static float FOV()
+        {
+            return BitConverter.ToSingle(Memory.ReadFromAddress(Addresses.FOV), 0);
+        }
+
+        public static int FPS()
+        {
+            return 1000000 / BitConverter.ToInt16(Memory.ReadFromAddress(Addresses.FPS[0]), 0);
+        }
+
+        /*public static int DOF()
+        {
+            return BitConverter.ToInt16(Memory.ReadFromAddress(Addresses.DOF), 0);
+        }*/
+    }
+
+    class CommandSet
+    {
+        public static void FOV(float newFOV = 78)
+        {
+            Memory.WriteToAddress(Addresses.FOV, BitConverter.GetBytes(newFOV));
+        }
+
+        public static void FPS(float newFPS = 60)
+        {
+            for (int i = 0; i < Addresses.FPS.Count; i++)
+                Memory.WriteToAddress(Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newFPS)));
+        }
+
+        /*public static void DOF(float newDOF = )
+        {
+            Memory.WriteToAddress(Addresses.DOF, BitConverter.GetBytes(newDOF));
+        }*/
+    }
+
+    class Help
+    {
+        static string[] Text = new string[] 
+        {
+            "Type FOV and Default or a value between 65-150,\nI.E. fov default or fov 110",
+            "Type FPS and Default or a value between 30-300,\nI.E. fps default or fps 144",
+            "Type Exit to close the application."
+        };
+        public static string Get(string grab = "help")
+        {
+            switch (grab.Equals("help"))
+            {
+                case true:
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < Text.Length; i++)
+                            sb.AppendLine(Text[i]);
+                        return sb.ToString();
+                    }
+                case false:
+                    if (grab.EndsWith("fov"))
+                    {
+                        return Text[0]; // Tell user FOV help options
+                    }
+                    else if (grab.EndsWith("fps"))
+                    {
+                        return Text[1]; // Tell user FPS help options
+                    }
+                    else if (grab.EndsWith("exit"))
+                    {
+                        return Text[2]; // Tell user Exit help options
+                    }
+                    else return "Invalid argument.";
+            }
+            return "";
         }
     }
 }
