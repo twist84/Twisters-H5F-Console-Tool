@@ -9,36 +9,24 @@ namespace Twisters_H5F_Console_Tool
     {
         static void Main(string[] args)
         {
-            Process p = default(Process);
-            try
+            reload:
+            if (UWP.H5Fprocess() != null)
             {
-                p = Process.GetProcessById((int)Memory.H5Fpid);
-            }
-            catch { }
-
-            if (p != null)
-            {
+                Console.Clear();
+                Other.SetH5FToForeground();
                 Other.SetOwnToForeground();
                 //Console.WriteLine("Base Address: {0}{1}", Addresses.baseAddress, Environment.NewLine);
-                try
-                {
-                    CommandGet.FOV();
-                }
-                catch { }
-
-                if (!CommandGet.FOV().Equals(0))
-                    Console.WriteLine("Current FOV: {0}", CommandGet.FOV()); // Tell user current FOV
-                else
-                    Console.WriteLine("Current FOV unavailable (game not fully loaded maybe?)");
-
+                Console.WriteLine("Current FOV: {0}", CommandGet.FOV()); // Tell user current FOV
                 Console.WriteLine("Current FPS: {0}", CommandGet.FPS()); // Tell user current FPS
-                Console.WriteLine("{0}Enter a Command or Type Help to Show help:", Environment.NewLine);
+                Console.WriteLine("{0}Enter a Command or Type Help to Show help:", Environment.NewLine); // Grab input from user
 
                 while (true) // Main loop
                 {
                     string input = Console.ReadLine(); // Get input from user
 
-                    if (input.ToLower().Contains("help"))
+                    if (input.ToLower().Equals("reload"))
+                        goto reload;
+                    else if (input.ToLower().Contains("help"))
                         Console.WriteLine(Help.Get(input.ToLower()));
                     else if (input.ToLower().Equals("exit"))
                         Environment.Exit(0); // Exit the appliction

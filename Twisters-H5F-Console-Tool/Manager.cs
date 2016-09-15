@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 namespace Manager
 {
@@ -121,10 +122,32 @@ namespace Manager
                 Marshal.ThrowExceptionForHR(hr);
             return pid;
         }
+
+        public static Process H5Fprocess()
+        {
+            Process p = default(Process);
+            try
+            {
+                p = Process.GetProcessById(Memory.H5Fpid);
+            }
+            catch { }
+
+            if (p != null)
+            {
+                while (CommandGet.FOV().Equals(0))
+                    Thread.Sleep(200);
+                return p;
+            }
+            return null;
+        }
     }
 
     class Other
     {
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetForegroundWindow(IntPtr hWnd);
+
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
@@ -132,6 +155,13 @@ namespace Manager
         public static void SetOwnToForeground()
         {
             SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
+            //if (!GetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle).Equals(true))
+        }
+
+        public static void SetH5FToForeground()
+        {
+            SetForegroundWindow(Process.GetProcessById(Memory.H5Fpid).MainWindowHandle);
+            //if (!GetForegroundWindow(Process.GetProcessById(Memory.H5Fpid).MainWindowHandle).Equals(true))
         }
     }
 
