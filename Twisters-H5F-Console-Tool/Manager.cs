@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Management.Automation;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace Manager
 {
     class Memory // Taken from https://github.com/CorpenEldorito/Corps-H5F-Tool Credit goes to Corpen.
     {
-        public static int H5Fpid = (int)UWP.LaunchApp("Microsoft.Halo5Forge_1.114.4592.2_x64__8wekyb3d8bbwe");
-
         public enum ProcessAccessFlags : uint
         {
             All = 0x001F0FFF,
@@ -40,7 +40,7 @@ namespace Manager
         public static byte[] ReadFromAddress(Int32 address)
         {
             Int64 offset = Addresses.Base().ToInt64() + address;
-            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)H5Fpid);
+            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)UWP.LaunchApp(UWP.GetH5FAppName()));
             int unused = 0;
             IntPtr addr = new IntPtr(offset);
             byte[] hex = new byte[4];
@@ -51,7 +51,7 @@ namespace Manager
         public static void WriteToAddress(Int32 address, byte[] hex)
         {
             Int64 offset = Addresses.Base().ToInt64() + address;
-            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)H5Fpid);
+            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)UWP.LaunchApp(UWP.GetH5FAppName()));
             int unused = 0;
             IntPtr addr = new IntPtr(offset);
             WriteProcessMemory(hProc, addr, hex, (UInt32)hex.LongLength, out unused);
@@ -67,7 +67,7 @@ namespace Manager
             IntPtr p = default(IntPtr);
             try
             {
-                p = Process.GetProcessById(Memory.H5Fpid).MainModule.BaseAddress;
+                p = Process.GetProcessById((int)UWP.LaunchApp(UWP.GetH5FAppName())).MainModule.BaseAddress;
             }
             catch { }
             
@@ -137,21 +137,25 @@ namespace Manager
             Process p = default(Process);
             try
             {
-                p = Process.GetProcessById(Memory.H5Fpid);
+                p = Process.GetProcessById((int)LaunchApp(UWP.GetH5FAppName()));
             }
             catch { }
 
-            if (!p.Equals(null))
+            try
             {
-                while (Addresses.Base().Equals(0))
-                    Thread.Sleep(200);
-                while (float.Parse(Commands.Get("FOV")).Equals(0))
-                    Thread.Sleep(200);
+                if (!p.Equals(null))
+                {
+                    while (Addresses.Base().Equals(0))
+                        Thread.Sleep(100);
+                    while (float.Parse(Commands.Get("FOV")).Equals(0))
+                        Thread.Sleep(100);
 
-                Other.SetH5FToForeground();
-                Other.SetOwnToForeground();
-                return p;
+                    Other.SetH5FToForeground();
+                    Other.SetOwnToForeground();
+                    return p;
+                }
             }
+            catch { }
             return null;
         }
 
@@ -160,23 +164,42 @@ namespace Manager
             Process p = default(Process);
             try
             {
-                p = Process.GetProcessById(Memory.H5Fpid);
+                p = Process.GetProcessById((int)UWP.LaunchApp(UWP.GetH5FAppName()));
             }
             catch { }
-
-            if (!p.Equals(null))
+            try
             {
-                return true;
+                if (!p.Equals(null))
+                {
+                    return true;
+                }
             }
+            catch { }
             return false;
+        }
+
+        public static string GetH5FAppName()
+        {
+            PowerShell ps = PowerShell.Create();
+            ps.AddCommand("Get-AppxPackage");
+            foreach (PSObject result in ps.Invoke())
+            {
+                Regex regex = new Regex(@"Microsoft.Halo5Forge_.*_x64__8wekyb3d8bbwe");
+                Match match = regex.Match(result.ToString());
+                if (match.Success)
+                    return match.Value;
+            }
+            return null;
         }
     }
 
     class Other
     {
         [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetForegroundWindow(IntPtr hWnd);
+        public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint ProcessId);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -184,14 +207,20 @@ namespace Manager
 
         public static void SetOwnToForeground()
         {
-            SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
-            //if (!GetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle).Equals(true))
+            uint ProcessId;
+            GetWindowThreadProcessId(GetForegroundWindow(), out ProcessId);
+
+            if (!ProcessId.Equals(Process.GetCurrentProcess().Id))
+                SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
         }
 
         public static void SetH5FToForeground()
         {
-            SetForegroundWindow(Process.GetProcessById(Memory.H5Fpid).MainWindowHandle);
-            //if (!GetForegroundWindow(Process.GetProcessById(Memory.H5Fpid).MainWindowHandle).Equals(true))
+            uint ProcessId;
+            GetWindowThreadProcessId(GetForegroundWindow(), out ProcessId);
+
+            if (!ProcessId.Equals((int)UWP.LaunchApp(UWP.GetH5FAppName())))
+                SetForegroundWindow(Process.GetProcessById((int)UWP.LaunchApp(UWP.GetH5FAppName())).MainWindowHandle);
         }
     }
 
