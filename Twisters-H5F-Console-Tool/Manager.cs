@@ -192,7 +192,18 @@ namespace Manager
             else
                 Console.WriteLine("Setting FOV back to default.");
 
-            Memory.WriteToAddress(Addresses.FOV, BitConverter.GetBytes(newFOV));
+            switch (newFOV >= 65 && newFOV <= 150)
+            {
+                case true:
+                    Memory.WriteToAddress(Addresses.FOV, BitConverter.GetBytes(newFOV));
+                    break;
+                case false:
+                    if (newFOV < 65)
+                        Console.WriteLine("Not possible to set FOV lower than 65."); // Force user to stay higher than or equal 65fov
+                    else if (newFOV > 150)
+                        Console.WriteLine("Not possible to set FOV higher than 150."); // Force user to stay lower than or equal 150fov
+                    break;
+            }
         }
 
         public static void FPS(float newFPS = 60)
@@ -202,8 +213,19 @@ namespace Manager
             else
                 Console.WriteLine("Setting FPS back to default.");
 
-            for (int i = 0; i < Addresses.FPS.Count; i++)
-                Memory.WriteToAddress(Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newFPS)));
+            switch (newFPS >= 30 && newFPS <= 300)
+            {
+                case true:
+                    for (int i = 0; i < Addresses.FPS.Count; i++)
+                        Memory.WriteToAddress(Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newFPS)));
+                    break;
+                case false:
+                    if (newFPS < 30)
+                        Console.WriteLine("Not possible to set FPS lower than 30."); // Force user to stay higher than or equal 30fps
+                    else if (newFPS > 300)
+                        Console.WriteLine("Not possible to set FPS higher than 300."); // Force user to stay lower than or equal 300fps
+                    break;
+            }
         }
 
         /*public static void DOF(float newDOF = )
