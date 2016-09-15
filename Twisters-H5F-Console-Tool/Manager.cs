@@ -158,9 +158,9 @@ namespace Manager
         public static void FOV(float newFOV = 78)
         {
             if (!newFOV.Equals(78))
-                Console.WriteLine("Setting FOV back to default.");
-            else
                 Console.WriteLine("Setting FPS to {0}.", newFOV);
+            else
+                Console.WriteLine("Setting FOV back to default.");
 
             Memory.WriteToAddress(Addresses.FOV, BitConverter.GetBytes(newFOV));
         }
@@ -168,9 +168,9 @@ namespace Manager
         public static void FPS(float newFPS = 60)
         {
             if (!newFPS.Equals(60))
-                Console.WriteLine("Setting FPS back to default.");
-            else
                 Console.WriteLine("Setting FPS to {0}.", newFPS);
+            else
+                Console.WriteLine("Setting FPS back to default.");
 
             for (int i = 0; i < Addresses.FPS.Count; i++)
                 Memory.WriteToAddress(Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newFPS)));
