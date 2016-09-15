@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Management.Automation;
 using System.Runtime.InteropServices;
+using System.Management.Automation;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -11,6 +11,8 @@ namespace Manager
 {
     class Memory // Taken from https://github.com/CorpenEldorito/Corps-H5F-Tool Credit goes to Corpen.
     {
+        public static int H5Fpid = (int)UWP.LaunchApp(UWP.GetH5FAppName());
+
         public enum ProcessAccessFlags : uint
         {
             All = 0x001F0FFF,
@@ -40,7 +42,7 @@ namespace Manager
         public static byte[] ReadFromAddress(Int32 address)
         {
             Int64 offset = Addresses.Base().ToInt64() + address;
-            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)UWP.LaunchApp(UWP.GetH5FAppName()));
+            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)H5Fpid);
             int unused = 0;
             IntPtr addr = new IntPtr(offset);
             byte[] hex = new byte[4];
@@ -51,7 +53,7 @@ namespace Manager
         public static void WriteToAddress(Int32 address, byte[] hex)
         {
             Int64 offset = Addresses.Base().ToInt64() + address;
-            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)UWP.LaunchApp(UWP.GetH5FAppName()));
+            var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)H5Fpid);
             int unused = 0;
             IntPtr addr = new IntPtr(offset);
             WriteProcessMemory(hProc, addr, hex, (UInt32)hex.LongLength, out unused);
@@ -67,7 +69,7 @@ namespace Manager
             IntPtr p = default(IntPtr);
             try
             {
-                p = Process.GetProcessById((int)UWP.LaunchApp(UWP.GetH5FAppName())).MainModule.BaseAddress;
+                p = Process.GetProcessById(Memory.H5Fpid).MainModule.BaseAddress;
             }
             catch { }
             
@@ -137,7 +139,7 @@ namespace Manager
             Process p = default(Process);
             try
             {
-                p = Process.GetProcessById((int)LaunchApp(UWP.GetH5FAppName()));
+                p = Process.GetProcessById(Memory.H5Fpid);
             }
             catch { }
 
@@ -164,7 +166,7 @@ namespace Manager
             Process p = default(Process);
             try
             {
-                p = Process.GetProcessById((int)UWP.LaunchApp(UWP.GetH5FAppName()));
+                p = Process.GetProcessById(Memory.H5Fpid);
             }
             catch { }
             try
@@ -219,8 +221,8 @@ namespace Manager
             uint ProcessId;
             GetWindowThreadProcessId(GetForegroundWindow(), out ProcessId);
 
-            if (!ProcessId.Equals((int)UWP.LaunchApp(UWP.GetH5FAppName())))
-                SetForegroundWindow(Process.GetProcessById((int)UWP.LaunchApp(UWP.GetH5FAppName())).MainWindowHandle);
+            if (!ProcessId.Equals(Memory.H5Fpid))
+                SetForegroundWindow(Process.GetProcessById(Memory.H5Fpid).MainWindowHandle);
         }
     }
 

@@ -14,7 +14,7 @@ namespace Twisters_H5F_Console_Tool
                 Console.Clear();
 
             Console.WriteLine("Info: FOV: {0}, FPS: {1}", Commands.Get("FOV"), Commands.Get("FPS"));
-            Console.WriteLine("Debug: Process Id: {0}, Base Address: {1}", UWP.LaunchApp(UWP.GetH5FAppName()), Addresses.baseAddress);
+            Console.WriteLine("Debug: Process Id: {0}, Base Address: {1}", Memory.H5Fpid, Addresses.baseAddress);
             Console.WriteLine("{0}Enter a Command or Type Help to Show help:", Environment.NewLine);
 
             while (!UWP.H5FIsRunning().Equals(false))
