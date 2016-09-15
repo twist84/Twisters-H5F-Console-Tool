@@ -40,7 +40,7 @@ namespace Manager
 
         public static byte[] ReadFromAddress(Int32 address)
         {
-            Int64 offset = Addresses.Base.ToInt64() + address;
+            Int64 offset = Addresses.Base().ToInt64() + address;
             var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)H5Fpid);
             int unused = 0;
             IntPtr addr = new IntPtr(offset);
@@ -51,7 +51,7 @@ namespace Manager
 
         public static void WriteToAddress(Int32 address, byte[] hex)
         {
-            Int64 offset = Addresses.Base.ToInt64() + address;
+            Int64 offset = Addresses.Base().ToInt64() + address;
             var hProc = OpenProcess(ProcessAccessFlags.All, false, (int)H5Fpid);
             int unused = 0;
             IntPtr addr = new IntPtr(offset);
@@ -63,8 +63,18 @@ namespace Manager
 
     class Addresses
     {
-        public static IntPtr Base = Process.GetProcessesByName("halo5forge").FirstOrDefault().MainModule.BaseAddress;
-        public static string baseAddress = Base.ToString("X"); // Base memory address
+        public static IntPtr Base()
+        {
+            IntPtr p = default(IntPtr);
+            try
+            {
+                p = Process.GetProcessesByName("halo5forge").FirstOrDefault().MainModule.BaseAddress;
+            }
+            catch { }
+            
+            return p;
+        }
+        public static string baseAddress = Base().ToString("X"); // Base memory address
         public static Int32 FOV = 0x58ECF90; // FOV memory address
         public static List<Int32> FPS = new List<Int32>(new Int32[] { 0x34B8C50, 0x34B8C60, 0x34B8C70 }); // FPS memory addresses
         //public static Int32 DOF = Int32.Parse(baseAddress) + ; // DOF memory address
