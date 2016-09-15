@@ -143,7 +143,9 @@ namespace Manager
 
             if (!p.Equals(null))
             {
-                while (float.Parse(Commands.Get("FOV")).Equals(0) && Addresses.Base().Equals(0))
+                while (Addresses.Base().Equals(0))
+                    Thread.Sleep(200);
+                while (float.Parse(Commands.Get("FOV")).Equals(0))
                     Thread.Sleep(200);
 
                 Other.SetH5FToForeground();
