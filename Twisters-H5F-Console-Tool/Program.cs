@@ -1,8 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 
 using Manager;
-
-using System.Diagnostics;
 
 namespace Twisters_H5F_Console_Tool
 {
