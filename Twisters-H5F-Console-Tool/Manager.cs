@@ -132,7 +132,7 @@ namespace Manager
             }
             catch { }
 
-            if (p != null)
+            if (!p.Equals(null))
             {
                 while (CommandGet.FOV().Equals(0))
                     Thread.Sleep(200);

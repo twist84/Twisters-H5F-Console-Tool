@@ -9,8 +9,9 @@ namespace Twisters_H5F_Console_Tool
     {
         static void Main(string[] args)
         {
-            reload:
-            if (UWP.H5Fprocess() != null)
+            Console.WriteLine("Loading memory...");
+        reload:
+            if (!UWP.H5Fprocess().Equals(null))
             {
                 Console.Clear();
                 Other.SetH5FToForeground();
