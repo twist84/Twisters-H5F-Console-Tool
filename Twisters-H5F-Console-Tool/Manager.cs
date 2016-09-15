@@ -74,10 +74,10 @@ namespace Manager
             
             return p;
         }
-        public static string baseAddress = Base().ToString("X"); // Base memory address
-        public static Int32 FOV = 0x58ECF90; // FOV memory address
-        public static List<Int32> FPS = new List<Int32>(new Int32[] { 0x34B8C50, 0x34B8C60, 0x34B8C70 }); // FPS memory addresses
-        //public static Int32 DOF = Int32.Parse(baseAddress) + ; // DOF memory address
+        public static string baseAddress = Base().ToString("X");
+        public static Int32 FOV = 0x58ECF90;
+        public static List<Int32> FPS = new List<Int32>(new Int32[] { 0x34B8C50, 0x34B8C60, 0x34B8C70 });
+        //public static Int32 DOF = Int32.Parse(baseAddress) + ;
     }
 
     class UWP // Taken from http://blogs.microsoft.co.il/pavely/2015/10/24/launching-windows-store-apps-programmatically/ Credit goes to Pavel.
@@ -144,8 +144,12 @@ namespace Manager
 
             if (!p.Equals(null))
             {
-                while (CommandGet.FOV().Equals(0))
+                while (float.Parse(Commands.Get("FOV")).Equals(0))
                     Thread.Sleep(200);
+
+                Console.Clear();
+                Other.SetH5FToForeground();
+                Other.SetOwnToForeground();
                 return p;
             }
             return null;
@@ -175,73 +179,115 @@ namespace Manager
         }
     }
 
-    class CommandGet
+    class Commands
     {
-        public static float FOV()
+        public static void Try(string[] Input)
         {
-            return BitConverter.ToSingle(Memory.ReadFromAddress(Addresses.FOV), 0);
-        }
-
-        public static int FPS()
-        {
-            return 1000000 / BitConverter.ToInt16(Memory.ReadFromAddress(Addresses.FPS[0]), 0);
-        }
-
-        /*public static int DOF()
-        {
-            return BitConverter.ToInt16(Memory.ReadFromAddress(Addresses.DOF), 0);
-        }*/
-    }
-
-    class CommandSet
-    {
-        public static void FOV(float newFOV = 78)
-        {
-            if (!newFOV.Equals(78))
-                Console.WriteLine("Setting FPS to {0}.", newFOV);
-            else
-                Console.WriteLine("Setting FOV back to default.");
-
-            switch (newFOV >= 65 && newFOV <= 150)
+            switch (Input.Length.Equals(2))
             {
                 case true:
-                    Memory.WriteToAddress(Addresses.FOV, BitConverter.GetBytes(newFOV));
+                    if (!Input[1].ToLower().Equals(null))
+                    {
+                        Int32 n;
+                        bool isNumeric = Int32.TryParse(Input[1].ToLower(), out n);
+
+                        if (Input[0].ToLower().Equals("fov"))
+                            if (Input[1].ToLower().Equals("default"))
+                                Commands.Set("FOV", 78);
+                            else if (isNumeric.Equals(true))
+                                Commands.Set("FOV", n);
+                            else
+                                Console.WriteLine("{0} is not a valid argument for FOV, type Help for examples", Input[1]);
+
+                        if (Input[0].ToLower().Equals("fps"))
+                            if (Input[1].ToLower().Equals("default"))
+                                Commands.Set("FPS", 60);
+                            else if (isNumeric.Equals(true))
+                                Commands.Set("FPS", n);
+                            else
+                                Console.WriteLine("{0} is not a valid argument for FPS, type Help for examples", Input[1]);
+                    }
                     break;
                 case false:
-                    if (newFOV < 65)
-                        Console.WriteLine("Not possible to set FOV lower than 65."); // Force user to stay higher than or equal 65fov
-                    else if (newFOV > 150)
-                        Console.WriteLine("Not possible to set FOV higher than 150."); // Force user to stay lower than or equal 150fov
+                    if (Input[0].ToLower().Contains("help"))
+                        Console.WriteLine(Help.Get(Input[0].ToLower()));
+                    else if (Input[0].ToLower().Equals("exit"))
+                        Environment.Exit(0);
+                    else if (Input[0].ToLower().StartsWith("fov") || Input[0].ToLower().StartsWith("fps"))
+                        Console.WriteLine("Current FOV: {0}", Commands.Get(Input[0]));
+                    else
+                        Console.WriteLine("{0} is not a valid command.", Input[0]);
                     break;
             }
         }
 
-        public static void FPS(float newFPS = 60)
+        public static string Get(string grab)
         {
-            if (!newFPS.Equals(60))
-                Console.WriteLine("Setting FPS to {0}.", newFPS);
-            else
-                Console.WriteLine("Setting FPS back to default.");
-
-            switch (newFPS >= 30 && newFPS <= 300)
+            switch (grab.ToUpper())
             {
-                case true:
-                    for (int i = 0; i < Addresses.FPS.Count; i++)
-                        Memory.WriteToAddress(Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newFPS)));
-                    break;
-                case false:
-                    if (newFPS < 30)
-                        Console.WriteLine("Not possible to set FPS lower than 30."); // Force user to stay higher than or equal 30fps
-                    else if (newFPS > 300)
-                        Console.WriteLine("Not possible to set FPS higher than 300."); // Force user to stay lower than or equal 300fps
+                case "FOV":
+                    return BitConverter.ToSingle(Memory.ReadFromAddress(Addresses.FOV), 0).ToString();
+                case "FPS":
+                    return (1000000 / BitConverter.ToInt16(Memory.ReadFromAddress(Addresses.FPS[0]), 0)).ToString();
+                case "DOF":
                     break;
             }
+            return "";
         }
 
-        /*public static void DOF(float newDOF = )
+        public static void Set(string grab, float newVal)
         {
-            Memory.WriteToAddress(Addresses.DOF, BitConverter.GetBytes(newDOF));
-        }*/
+            switch (grab)
+            {
+                #region FOV
+                case "FOV":
+                    if (!newVal.Equals(78))
+                        Console.WriteLine("Setting FPS to {0}.", newVal);
+                    else
+                        Console.WriteLine("Setting FOV back to default.");
+
+                    switch (newVal >= 65 && newVal <= 150)
+                    {
+                        case true:
+                            Memory.WriteToAddress(Addresses.FOV, BitConverter.GetBytes(newVal));
+                            break;
+                        case false:
+                            if (newVal < 65)
+                                Console.WriteLine("Not possible to set FOV lower than 65.");
+                            else if (newVal > 150)
+                                Console.WriteLine("Not possible to set FOV higher than 150.");
+                            break;
+                    }
+                    break;
+                #endregion
+                #region FPS
+                case "FPS":
+                    if (!newVal.Equals(60))
+                        Console.WriteLine("Setting FPS to {0}.", newVal);
+                    else
+                        Console.WriteLine("Setting FPS back to default.");
+
+                    switch (newVal >= 30 && newVal <= 300)
+                    {
+                        case true:
+                            for (int i = 0; i < Addresses.FPS.Count; i++)
+                                Memory.WriteToAddress(Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newVal)));
+                            break;
+                        case false:
+                            if (newVal < 30)
+                                Console.WriteLine("Not possible to set FPS lower than 30.");
+                            else if (newVal > 300)
+                                Console.WriteLine("Not possible to set FPS higher than 300.");
+                            break;
+                    }
+                    break;
+                #endregion
+                #region DOF
+                case "DOF":
+                    break;
+                #endregion
+            }
+        }
     }
 
     class Help
@@ -252,6 +298,7 @@ namespace Manager
             "Type FPS and Default or a value between 30-300,\nI.E. fps default or fps 144",
             "Type Exit to close the application."
         };
+
         public static string Get(string grab = "help")
         {
             switch (grab.Equals("help"))
@@ -266,15 +313,15 @@ namespace Manager
                 case false:
                     if (grab.EndsWith("fov"))
                     {
-                        return Text[0]; // Tell user FOV help options
+                        return Text[0];
                     }
                     else if (grab.EndsWith("fps"))
                     {
-                        return Text[1]; // Tell user FPS help options
+                        return Text[1];
                     }
                     else if (grab.EndsWith("exit"))
                     {
-                        return Text[2]; // Tell user Exit help options
+                        return Text[2];
                     }
                     else return "Invalid argument.";
             }
