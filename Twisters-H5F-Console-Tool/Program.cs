@@ -17,7 +17,7 @@ namespace Twisters_H5F_Console_Tool
             }
             catch { }
 
-            if ((p != null))
+            if (p != null)
             {
                 Other.SetOwnToForeground();
                 //Console.WriteLine("Base Address: {0}{1}", Addresses.baseAddress, Environment.NewLine);
@@ -27,7 +27,7 @@ namespace Twisters_H5F_Console_Tool
                 }
                 catch { }
 
-                if(CommandGet.FOV() != 0)
+                if (CommandGet.FOV() != 0)
                     Console.WriteLine("Current FOV: {0}", CommandGet.FOV()); // Tell user current FOV
                 else
                     Console.WriteLine("Current FOV unavailable (game not fully loaded maybe?)");
@@ -55,53 +55,35 @@ namespace Twisters_H5F_Console_Tool
 
                         if (Input[0].ToLower().Equals("fov")) // If array entry 1 lower case equals "fov" continue
                         {
-                            switch (Input[1].ToLower().Equals("default"))
-                            {
-                                case true:
-                                    Console.WriteLine("Setting FOV back to default.");
-                                    CommandSet.FOV(); // Set FOV to default
-                                    break;
-                                case false:
-                                    Console.WriteLine("{0} is not a valid argument for FOV, type Help for examples", Input[1]);
-                                    break;
-                            }
+                            Int32 fps = n;
+                            if (Input[1].ToLower().Equals("default").Equals(true))
+                                CommandSet.FOV(); // Set FOV to default
+                            else
+                                Console.WriteLine("{0} is not a valid argument for FOV, type Help for examples", Input[1]);
+
                             if (isNumeric.Equals(true)) // If array entry 2 Has Int Continue
-                            {
-                                if (n >= 65 && n <= 150)
-                                {
-                                    Console.WriteLine("Setting FOV to {0}.", Int32.Parse(Input[1]));
+                                if (fps >= 65 && fps <= 150)
                                     CommandSet.FOV(Int32.Parse(Input[1])); // Set FOV to array entry 2
-                                }
-                                else if (n < 150)
+                                else if (fps < 150)
                                     Console.WriteLine("Not possible to set FOV higher than 150."); // Force user to stay lower than or equal 150fov
-                                else if (n > 65)
+                                else if (fps > 65)
                                     Console.WriteLine("Not possible to set FOV lower than 65."); // Force user to stay higher than or equal 65fov
-                            }
                         }
                         else if (Input[0].ToLower().Equals("fps")) // If array entry 1 lower case equals "fps" continue
                         {
-                            switch (Input[1].ToLower().Equals("default"))
-                            {
-                                case true:
-                                    Console.WriteLine("Setting FPS back to default.");
-                                    CommandSet.FPS(); // Set FPS to default
-                                    break;
-                                case false:
-                                    Console.WriteLine("{0} is not a valid argument for FPS, type Help for examples", Input[1]);
-                                    break;
-                            }
+                            Int32 fov = n;
+                            if (Input[1].ToLower().Equals("default").Equals(true))
+                                CommandSet.FPS(); // Set FPS to default
+                            else
+                                Console.WriteLine("{0} is not a valid argument for FPS, type Help for examples", Input[1]);
+
                             if (isNumeric.Equals(true)) // If array entry 2 has int continue
-                            {
-                                if (n >= 30 && n <= 300)
-                                {
-                                    Console.WriteLine("Setting FPS to {0}.", Int32.Parse(Input[1]));
+                                if (fov >= 30 && fov <= 300)
                                     CommandSet.FPS(Int32.Parse(Input[1])); // Set FPS to array entry 2
-                                }
-                                else if (n < 300)
+                                else if (fov < 300)
                                     Console.WriteLine("Not possible to set FPS higher than 300."); // Force user to stay lower than or equal 300fps
-                                else if (n > 30)
+                                else if (fov > 30)
                                     Console.WriteLine("Not possible to set FPS lower than 30."); // Force user to stay higher than or equal 30fps
-                            }
                         }
                     }
                 }
