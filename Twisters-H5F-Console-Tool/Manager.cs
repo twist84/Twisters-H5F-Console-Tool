@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -68,7 +67,7 @@ namespace Manager
             IntPtr p = default(IntPtr);
             try
             {
-                p = Process.GetProcessesByName("halo5forge").FirstOrDefault().MainModule.BaseAddress;
+                p = Process.GetProcessById(Memory.H5Fpid).MainModule.BaseAddress;
             }
             catch { }
             
@@ -144,15 +143,30 @@ namespace Manager
 
             if (!p.Equals(null))
             {
-                while (float.Parse(Commands.Get("FOV")).Equals(0))
+                while (float.Parse(Commands.Get("FOV")).Equals(0) && Addresses.Base().Equals(0))
                     Thread.Sleep(200);
 
-                Console.Clear();
                 Other.SetH5FToForeground();
                 Other.SetOwnToForeground();
                 return p;
             }
             return null;
+        }
+
+        public static bool H5FIsRunning()
+        {
+            Process p = default(Process);
+            try
+            {
+                p = Process.GetProcessById(Memory.H5Fpid);
+            }
+            catch { }
+
+            if (!p.Equals(null))
+            {
+                return true;
+            }
+            return false;
         }
     }
 
