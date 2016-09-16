@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace Manager
 {
-    class Memory // Taken from https://github.com/CorpenEldorito/Corps-H5F-Tool Credit goes to Corpen.s
+    class Memory // Taken from https://github.com/CorpenEldorito/Corps-H5F-Tool Credit goes to Corpen.
     {
         public static int H5Fpid = (int)UWP.LaunchApp(UWP.GetH5FAppName());
 
@@ -103,8 +103,8 @@ namespace Manager
 
             return p;
         }
-        public static string BaseAddress = getBaseAddress().ToString();
-        public static string TebBaseAddress = getTebBaseAddress().ToString();
+        public static IntPtr BaseAddress = getBaseAddress();
+        public static IntPtr TebBaseAddress = getTebBaseAddress();
         public static Int32 FOV = 0x58ECF90;
         public static List<Int32> FPS = new List<Int32>(new Int32[] {
             0x34B8C50,
@@ -129,7 +129,7 @@ namespace Manager
         });
     }
 
-    class UWP // Taken from http://blogs.microsoft.co.il/pavely/2015/10/24/launching-windows-store-apps-programmatically/ Credit goes to Pavel.
+    class UWP // Taken from http://blogs.microsoft.co.il/pavely/2015/10/24/launching-windows-store-apps-programmatically Credit goes to Pavel.
     {
         enum ActivateOptions
         {
@@ -337,20 +337,20 @@ namespace Manager
                 case "FOV":
                     return String.Format(
                         "{0:0.00}", 
-                        BitConverter.ToSingle(Memory.ReadFromAddress(Int64.Parse(Addresses.BaseAddress), Addresses.FOV), 0)
+                        BitConverter.ToSingle(Memory.ReadFromAddress(Addresses.BaseAddress.ToInt64(), Addresses.FOV), 0)
                     );
                 case "FPS":
                     return String.Format(
                         "{0:0.00}", 
-                        (1000000 / BitConverter.ToInt16(Memory.ReadFromAddress(Int64.Parse(Addresses.BaseAddress), Addresses.FPS[0]), 0))
+                        (1000000 / BitConverter.ToInt16(Memory.ReadFromAddress(Addresses.BaseAddress.ToInt64(), Addresses.FPS[0]), 0))
                     );
                 case "DOF":
                     break;
                 case "RES":
                     return String.Format(
                         "{0}x{1}", 
-                        BitConverter.ToInt16(Memory.ReadFromAddress(Int64.Parse(Addresses.BaseAddress), Addresses.ResWidth[0]), 0), 
-                        BitConverter.ToInt16(Memory.ReadFromAddress(Int64.Parse(Addresses.BaseAddress), Addresses.ResHeight[0]), 0)
+                        BitConverter.ToInt16(Memory.ReadFromAddress(Addresses.BaseAddress.ToInt64(), Addresses.ResWidth[0]), 0), 
+                        BitConverter.ToInt16(Memory.ReadFromAddress(Addresses.BaseAddress.ToInt64(), Addresses.ResHeight[0]), 0)
                     );
                 case "AR":
                     break;
@@ -372,7 +372,7 @@ namespace Manager
                     switch (newVal >= 65 && newVal <= 150)
                     {
                         case true:
-                            Memory.WriteToAddress(Int64.Parse(Addresses.BaseAddress), Addresses.FOV, BitConverter.GetBytes(newVal));
+                            Memory.WriteToAddress(Addresses.BaseAddress.ToInt64(), Addresses.FOV, BitConverter.GetBytes(newVal));
                             break;
                         case false:
                             if (newVal < 65)
@@ -394,7 +394,7 @@ namespace Manager
                     {
                         case true:
                             for (int i = 0; i < Addresses.FPS.Count; i++)
-                                Memory.WriteToAddress(Int64.Parse(Addresses.BaseAddress), Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newVal)));
+                                Memory.WriteToAddress(Addresses.BaseAddress.ToInt64(), Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newVal)));
                             break;
                         case false:
                             if (newVal < 30)
@@ -472,7 +472,7 @@ namespace Manager
         }
     }
 
-    unsafe class Tls
+    unsafe class Tls // Taken from https://github.com/AnvilOnline/AusarDocs Credit goes to xbox7887.
     {
         [Flags]
         public enum ProcessAccessFlags : uint
