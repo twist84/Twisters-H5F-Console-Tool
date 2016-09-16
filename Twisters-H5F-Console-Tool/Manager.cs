@@ -127,6 +127,7 @@ namespace Manager
             0x4E97F94
             //halo5forge.g_LEngineDefaultPoolId+6B4958
         });
+        public static Int32 KillVolumesDisable = 0x5B1CB90;
     }
 
     class UWP // Taken from http://blogs.microsoft.co.il/pavely/2015/10/24/launching-windows-store-apps-programmatically Credit goes to Pavel.
@@ -288,19 +289,31 @@ namespace Manager
 
                         if (Input[0].ToLower().Equals("fov"))
                             if (Input[1].ToLower().Equals("default"))
-                                Commands.Set("FOV", 78);
+                                Commands.Set("FOV", 78.ToString());
                             else if (isNumeric.Equals(true))
-                                Commands.Set("FOV", n);
+                                Commands.Set("FOV", n.ToString());
                             else
                                 Console.WriteLine("{0} is not a valid argument for FOV, type Help for examples", Input[1]);
 
                         if (Input[0].ToLower().Equals("fps"))
                             if (Input[1].ToLower().Equals("default"))
-                                Commands.Set("FPS", 60);
+                                Commands.Set("FPS", 60.ToString());
                             else if (isNumeric.Equals(true))
-                                Commands.Set("FPS", n);
+                                Commands.Set("FPS", n.ToString());
                             else
                                 Console.WriteLine("{0} is not a valid argument for FPS, type Help for examples", Input[1]);
+                    }
+                    else
+                    {
+                        if (Input[0].ToLower().Equals("kvd"))
+                            if (Input[1].ToLower().Equals("default"))
+                                Commands.Set("KVD", "true");
+                            else if (Input[1].ToLower().Equals("true"))
+                                Commands.Set("KVD", "true");
+                            else if (Input[1].ToLower().Equals("false"))
+                                Commands.Set("KVD", "false");
+                            else
+                                Console.WriteLine("{0} is not a valid argument for KVD, type Help for examples", Input[1]);
                     }
                     /*else
                     {
@@ -322,7 +335,7 @@ namespace Manager
                         Console.WriteLine(Help.Get(Input[0].ToLower()));
                     else if (Input[0].ToLower().Equals("exit"))
                         Environment.Exit(0);
-                    else if (Input[0].ToLower().StartsWith("fov") || Input[0].ToLower().StartsWith("fps") || Input[0].ToLower().StartsWith("res"))
+                    else if (Input[0].ToLower().StartsWith("fov") || Input[0].ToLower().StartsWith("fps") || Input[0].ToLower().StartsWith("res") || Input[0].ToLower().StartsWith("kvd"))
                         if (Input[0].ToUpper().Equals("RES"))
                             Console.WriteLine("Current {0}: {1}", "Resolution", Commands.Get(Input[0]));
                         else
@@ -355,32 +368,35 @@ namespace Manager
                         BitConverter.ToInt16(Memory.ReadFromAddress(Addresses.BaseAddress.ToInt64(), Addresses.ResWidth[0]), 0), 
                         BitConverter.ToInt16(Memory.ReadFromAddress(Addresses.BaseAddress.ToInt64(), Addresses.ResHeight[0]), 0)
                     );
-                case "AR":
-                    break;
+                case "KVD":
+                    return String.Format(
+                        "{0}",
+                        BitConverter.ToBoolean(Memory.ReadFromAddress(Addresses.BaseAddress.ToInt64(), Addresses.KillVolumesDisable), 0)
+                    );
             }
             return "";
         }
 
-        public static void Set(string grab, float newVal, float temp = 0)
+        public static void Set(string grab, string temp0 = null, string temp1 = null)
         {
             switch (grab.ToUpper())
             {
                 #region Field Of View
                 case "FOV":
-                    if (!newVal.Equals(78))
-                        Console.WriteLine("Setting FPS to {0}.", newVal);
+                    if (!temp0.Equals(78))
+                        Console.WriteLine("Setting FPS to {0}.", float.Parse(temp0));
                     else
                         Console.WriteLine("Setting FOV back to default.");
 
-                    switch (newVal >= 65 && newVal <= 150)
+                    switch (float.Parse(temp0) >= 65 && float.Parse(temp0) <= 150)
                     {
                         case true:
-                            Memory.WriteToAddress(Addresses.BaseAddress.ToInt64(), Addresses.FOV, BitConverter.GetBytes(newVal));
+                            Memory.WriteToAddress(Addresses.BaseAddress.ToInt64(), Addresses.FOV, BitConverter.GetBytes(float.Parse(temp0)));
                             break;
                         case false:
-                            if (newVal < 65)
+                            if (float.Parse(temp0) < 65)
                                 Console.WriteLine("Not possible to set FOV lower than 65.");
-                            else if (newVal > 150)
+                            else if (float.Parse(temp0) > 150)
                                 Console.WriteLine("Not possible to set FOV higher than 150.");
                             break;
                     }
@@ -388,21 +404,21 @@ namespace Manager
                 #endregion
                 #region Frames Per Second
                 case "FPS":
-                    if (!newVal.Equals(60))
-                        Console.WriteLine("Setting FPS to {0}.", newVal);
+                    if (!temp0.Equals(60))
+                        Console.WriteLine("Setting FPS to {0}.", temp0);
                     else
                         Console.WriteLine("Setting FPS back to default.");
 
-                    switch (newVal >= 30 && newVal <= 300)
+                    switch (float.Parse(temp0) >= 30 && float.Parse(temp0) <= 300)
                     {
                         case true:
                             for (int i = 0; i < Addresses.FPS.Count; i++)
-                                Memory.WriteToAddress(Addresses.BaseAddress.ToInt64(), Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(newVal)));
+                                Memory.WriteToAddress(Addresses.BaseAddress.ToInt64(), Addresses.FPS[i], BitConverter.GetBytes(1000000 / Convert.ToInt16(temp0)));
                             break;
                         case false:
-                            if (newVal < 30)
+                            if (float.Parse(temp0) < 30)
                                 Console.WriteLine("Not possible to set FPS lower than 30.");
-                            else if (newVal > 300)
+                            else if (float.Parse(temp0) > 300)
                                 Console.WriteLine("Not possible to set FPS higher than 300.");
                             break;
                     }
@@ -414,20 +430,54 @@ namespace Manager
                 #endregion
                 #region Resolution
                 /*case "RES":
-                    if (!(newVal.Equals(960) && temp.Equals(540)).Equals(true))
-                        Console.WriteLine("Setting RES to {0}x{1}.", newVal, temp);
+                    if (!(float.Parse(temp0).Equals(960) && float.Parse(temp0).Equals(540)).Equals(true))
+                        Console.WriteLine("Setting RES to {0}x{1}.", float.Parse(temp0), float.Parse(temp1));
                     else
                         Console.WriteLine("Setting RES back to default.");
 
-                    switch (newVal >= 960 && temp >= 540)
+                    switch (float.Parse(temp0) >= 960 && float.Parse(temp1) >= 540)
                     {
                         case true:
-                                Memory.WriteToAddress(Int64.Parse(Addresses.BaseAddress), Addresses.ResWidth[3], BitConverter.GetBytes(Convert.ToInt16(newVal)));
-                                Memory.WriteToAddress(Int64.Parse(Addresses.BaseAddress), Addresses.ResHeight[3], BitConverter.GetBytes(Convert.ToInt16(temp)));
+                                Memory.WriteToAddress(
+                                    Int64.Parse(Addresses.BaseAddress), 
+                                    Addresses.ResWidth[3], 
+                                    BitConverter.GetBytes(Convert.ToInt16(temp0))
+                                );
+                                Memory.WriteToAddress(
+                                    Int64.Parse(Addresses.BaseAddress), 
+                                    Addresses.ResHeight[3], 
+                                    BitConverter.GetBytes(Convert.ToInt16(temp1))
+                                );
                             break;
                         case false:
-                            if (newVal < 960 || temp < 540)
+                            if (float.Parse(temp0) < 960 || float.Parse(temp1) < 540)
                                 Console.WriteLine("Not possible to set RES lower than 960x540.");
+                            break;
+                    }
+                    break;*/
+                #endregion
+                #region Kill Volumes Disable
+                /*case "KVD":
+                    if (!bool.Parse(temp0).Equals(true))
+                        Console.WriteLine("Setting KVD to {0}.", bool.Parse(temp0));
+                    else
+                        Console.WriteLine("Setting KVD back to default.");
+
+                    switch (bool.Parse(temp0))
+                    {
+                        case true:
+                            Memory.WriteToAddress(
+                                Addresses.BaseAddress.ToInt64(), 
+                                Addresses.ResWidth[3], 
+                                BitConverter.GetBytes(Convert.ToInt16(temp0))
+                            );
+                            break;
+                        case false:
+                            Memory.WriteToAddress(
+                                Addresses.BaseAddress.ToInt64(),
+                                Addresses.ResWidth[3],
+                                BitConverter.GetBytes(Convert.ToInt16(temp0))
+                            );
                             break;
                     }
                     break;*/
