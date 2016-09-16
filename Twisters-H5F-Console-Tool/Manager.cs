@@ -302,7 +302,7 @@ namespace Manager
                             else
                                 Console.WriteLine("{0} is not a valid argument for FPS, type Help for examples", Input[1]);
                     }
-                    else
+                    /*else
                     {
                         Single n,o;
                         bool isNumericW = Single.TryParse(Input[1].ToLower().Split('x')[0], out n);
@@ -315,15 +315,18 @@ namespace Manager
                                 Commands.Set("RES", n, o);
                             else
                                 Console.WriteLine("{0} is not a valid argument for FOV, type Help for examples", Input[1]);
-                    }
+                    }*/
                     break;
                 case false:
                     if (Input[0].ToLower().Contains("help"))
                         Console.WriteLine(Help.Get(Input[0].ToLower()));
                     else if (Input[0].ToLower().Equals("exit"))
                         Environment.Exit(0);
-                    else if (Input[0].ToLower().StartsWith("fov") || Input[0].ToLower().StartsWith("fps"))
-                        Console.WriteLine("Current FOV: {0}", Commands.Get(Input[0]));
+                    else if (Input[0].ToLower().StartsWith("fov") || Input[0].ToLower().StartsWith("fps") || Input[0].ToLower().StartsWith("res"))
+                        if (Input[0].ToUpper().Equals("RES"))
+                            Console.WriteLine("Current {0}: {1}", "Resolution", Commands.Get(Input[0]));
+                        else
+                            Console.WriteLine("Current {0}: {1}", Input[0].ToUpperInvariant(), Commands.Get(Input[0]));
                     else
                         Console.WriteLine("{0} is not a valid command.", Input[0]);
                     break;
@@ -439,6 +442,7 @@ namespace Manager
         {
             "Type FOV and Default or a value between 65-150,\nI.E. fov default or fov 110",
             "Type FPS and Default or a value between 30-300,\nI.E. fps default or fps 144",
+            "Type RES to get the current resolution,\nI.E. res",
             "Type Exit to close the application."
         };
 
@@ -462,9 +466,13 @@ namespace Manager
                     {
                         return Text[1];
                     }
-                    else if (grab.EndsWith("exit"))
+                    else if (grab.EndsWith("res"))
                     {
                         return Text[2];
+                    }
+                    else if (grab.EndsWith("exit"))
+                    {
+                        return Text[3];
                     }
                     else return "Invalid argument.";
             }
