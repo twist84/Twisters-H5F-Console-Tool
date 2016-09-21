@@ -119,13 +119,13 @@ namespace Manager
             0x4E97F74,
             0x4E97F7C,
             0x4E97F90
-            //halo5forge.g_LEngineDefaultPoolId+6B4954
+            //halo5forge.g_LEngineDefaultPoolId+6B4954 = halo5forge.exe+4E97F60
         });
         public static List<Int32> ResHeight = new List<Int32>(new Int32[] {
             0x4E97F78,
             0x4E97F80,
             0x4E97F94
-            //halo5forge.g_LEngineDefaultPoolId+6B4958
+            //halo5forge.g_LEngineDefaultPoolId+6B4958 = halo5forge.exe+4E97F64
         });
         public static Int32 KillVolumesDisable = 0x5B1CB90;
     }
